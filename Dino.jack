@@ -1,0 +1,100 @@
+class Dino {
+    field int y, prevY, vy;
+    field boolean jumping;
+
+    constructor Dino new() {
+        let y = 179;
+        let prevY = y;
+        let vy = 0;
+        let jumping = false;
+        return this;
+    }
+
+    method void update(char key) {
+        let prevY = y;
+        if (jumping) {
+            let y = y + vy;
+            let vy = vy + 1;
+            if (y > 178) {
+                let y = 179;
+                let jumping = false;
+            }
+        }
+        else {
+            if ((key = 32) | (key = 131)) {
+                let jumping = true;
+                let vy = -9;
+            }
+        }
+        return;
+    }
+
+    method void erase() {
+        var int r, addr;
+        let r = prevY;
+        while (r < (prevY + 21)) {
+            if ((r < y) | (r > (y + 20))) {
+                let addr = 16384 + (r * 32) + 3;
+                do Memory.poke(addr, 0);
+                do Memory.poke(addr + 1, 0);
+            }
+            let r = r + 1;
+        }
+        return;
+    }
+
+    method void draw() {
+        var int addr;
+        let addr = 16384 + (y * 32) + 3;
+        do Memory.poke(addr, -16384);
+        do Memory.poke(addr + 1, 255);
+        do Memory.poke(addr + 32, 24576);
+        do Memory.poke(addr + 33, 511);
+        do Memory.poke(addr + 64, -8192);
+        do Memory.poke(addr + 65, 511);
+        do Memory.poke(addr + 96, -8192);
+        do Memory.poke(addr + 97, 511);
+        do Memory.poke(addr + 128, -8192);
+        do Memory.poke(addr + 129, 7);
+        do Memory.poke(addr + 160, -8192);
+        do Memory.poke(addr + 161, 63);
+        do Memory.poke(addr + 192, -4095);
+        do Memory.poke(addr + 193, 3);
+        do Memory.poke(addr + 224, -2047);
+        do Memory.poke(addr + 225, 3);
+        do Memory.poke(addr + 256, -509);
+        do Memory.poke(addr + 257, 15);
+        do Memory.poke(addr + 288, -121);
+        do Memory.poke(addr + 289, 4);
+        do Memory.poke(addr + 320, 16383);
+        do Memory.poke(addr + 321, 0);
+        do Memory.poke(addr + 352, 16382);
+        do Memory.poke(addr + 353, 0);
+        do Memory.poke(addr + 384, 16380);
+        do Memory.poke(addr + 385, 0);
+        do Memory.poke(addr + 416, 8184);
+        do Memory.poke(addr + 417, 0);
+        do Memory.poke(addr + 448, 4080);
+        do Memory.poke(addr + 449, 0);
+        do Memory.poke(addr + 480, 2016);
+        do Memory.poke(addr + 481, 0);
+        do Memory.poke(addr + 512, 3296);
+        do Memory.poke(addr + 513, 0);
+        do Memory.poke(addr + 544, 2144);
+        do Memory.poke(addr + 545, 0);
+        do Memory.poke(addr + 576, 2080);
+        do Memory.poke(addr + 577, 0);
+        do Memory.poke(addr + 608, 2080);
+        do Memory.poke(addr + 609, 0);
+        do Memory.poke(addr + 640, 6240);
+        do Memory.poke(addr + 641, 0);
+        return;
+    }
+
+    method int getY() { return y; }
+
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+}

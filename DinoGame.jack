@@ -1,0 +1,108 @@
+class DinoGame {
+    field Dino dino;
+    field Obstacle obs;
+    field int score, hiScore, delay, seed;
+
+    constructor DinoGame new() {
+        let dino = null;
+        let obs = null;
+        let hiScore = 0;
+        let seed = 1;
+        return this;
+    }
+
+    method int rand(int n) {
+        var int x;
+        let seed = (seed * 25173) + 13849;
+        let x = (seed & 32767) / 8;
+        return x - ((x / n) * n);
+    }
+
+    method void newObstacle() {
+        if (~(obs = null)) {
+            do obs.dispose();
+        }
+        let obs = Obstacle.new(rand(2) = 1, 512 + (rand(19) * 8));
+        return;
+    }
+
+    method void reset() {
+        if (~(dino = null)) {
+            do dino.dispose();
+        }
+        let dino = Dino.new();
+        do newObstacle();
+        let score = 0;
+        let delay = 40;
+
+        do Screen.clearScreen();
+        do Screen.setColor(true);
+        do Screen.drawLine(0, 200, 511, 200);
+        do Output.moveCursor(0, 44);
+        do Output.printString("HI ");
+        do Output.printInt(hiScore);
+        return;
+    }
+
+    method void play() {
+        var boolean dead;
+        let dead = false;
+        while (~dead) {
+            do dino.update(Keyboard.keyPressed());
+            do dino.erase();
+
+            do obs.move(8);
+            if (obs.isGone()) {
+                do newObstacle();
+            }
+
+            do dino.draw();
+            let dead = obs.hits(dino.getY());
+
+            let score = score + 1;
+            do Output.moveCursor(0, 56);
+            do Output.printInt(score);
+            let delay = 40 - (score / 50);
+            if (delay < 10) {
+                let delay = 10;
+            }
+            do Sys.wait(delay);
+        }
+        return;
+    }
+
+    method void gameOver() {
+        if (score > hiScore) {
+            let hiScore = score;
+        }
+        do Output.moveCursor(8, 27);
+        do Output.printString("GAME OVER");
+        do Output.moveCursor(10, 20);
+        do Output.printString("SPACE = nova igra");
+
+        while (~(Keyboard.keyPressed() = 0)) { }
+        while (~(Keyboard.keyPressed() = 32)) { }
+        return;
+    }
+
+    method void run() {
+        do Output.moveCursor(10, 20);
+        do Output.printString("DINO RUN - SPACE za start");
+        while (~(Keyboard.keyPressed() = 32)) {
+            let seed = seed + 1;
+        }
+        while (true) {
+            do reset();
+            do play();
+            do gameOver();
+        }
+        return;
+    }
+
+    method void dispose() {
+        if (~(obs = null)) { do obs.dispose(); }
+        if (~(dino = null)) { do dino.dispose(); }
+        do Memory.deAlloc(this);
+        return;
+    }
+}
