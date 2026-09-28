@@ -22,7 +22,7 @@ class DinoGame {
         if (~(obs = null)) {
             do obs.dispose();
         }
-        let obs = Obstacle.new(rand(2) = 1, 512 + (rand(19) * 8));
+        let obs = Obstacle.new(rand(2) = 1, 32 + rand(10));
         return;
     }
 
@@ -33,7 +33,7 @@ class DinoGame {
         let dino = Dino.new();
         do newObstacle();
         let score = 0;
-        let delay = 40;
+        let delay = 60;
 
         do Screen.clearScreen();
         do Screen.setColor(true);
@@ -51,7 +51,7 @@ class DinoGame {
             do dino.update(Keyboard.keyPressed());
             do dino.erase();
 
-            do obs.move(8);
+            do obs.move();
             if (obs.isGone()) {
                 do newObstacle();
             }
@@ -62,9 +62,9 @@ class DinoGame {
             let score = score + 1;
             do Output.moveCursor(0, 56);
             do Output.printInt(score);
-            let delay = 40 - (score / 50);
-            if (delay < 10) {
-                let delay = 10;
+            let delay = 60 - (score / 40);
+            if (delay < 15) {
+                let delay = 15;
             }
             do Sys.wait(delay);
         }

@@ -1,11 +1,11 @@
 class Obstacle {
-    field int x, h, words;
+    field int col, h, words;
     field int left, right;
     field boolean big;
 
-    constructor Obstacle new(boolean isBig, int startX) {
+    constructor Obstacle new(boolean isBig, int startCol) {
         let big = isBig;
-        let x = startX;
+        let col = startCol;
         if (big) {
             let words = 2;
             let h = 22;
@@ -21,48 +21,30 @@ class Obstacle {
         return this;
     }
 
-    method int col() {
-        return (x - (x & 15)) / 16;
-    }
-
-    method int lastCol() {
-        if ((x & 15) = 0) {
-            return col() + words - 1;
-        }
-        return col() + words;
-    }
-
-    method void move(int speed) {
-        var int oldLast, c;
-        let oldLast = lastCol();
-        let x = x - speed;
+    method void move() {
+        let col = col - 1;
         do draw();
-
-        let c = lastCol() + 1;
-        while (c < (oldLast + 1)) {
-            do Obstacle.clearColumn(c, 200 - h, h);
-            let c = c + 1;
-        }
+        do Obstacle.clearColumn(col + words, 200 - h, h);
         return;
     }
 
     method void draw() {
         if (big) {
-            if ((x & 15) = 0) { do Obstacle.bigCactus0(col(), 200 - h); }
-            else { do Obstacle.bigCactus8(col(), 200 - h); }
+            do Obstacle.bigCactus(col, 200 - h);
         }
         else {
-            if ((x & 15) = 0) { do Obstacle.smallCactus0(col(), 200 - h); }
-            else { do Obstacle.smallCactus8(col(), 200 - h); }
+            do Obstacle.smallCactus(col, 200 - h);
         }
         return;
     }
 
     method boolean isGone() {
-        return lastCol() < 0;
+        return (col + words) < 1;
     }
 
     method boolean hits(int dy) {
+        var int x;
+        let x = col * 16;
         if (((x + left) < 76) & ((x + right) > 51)) {
             if ((dy + 20) > (199 - h)) {
                 return true;
@@ -86,7 +68,7 @@ class Obstacle {
         return;
     }
 
-    function void smallCactus0(int col, int row) {
+    function void smallCactus(int col, int row) {
         var int addr;
         let addr = 16384 + (row * 32) + col;
         if ((col > -1) & (col < 32)) {
@@ -112,53 +94,7 @@ class Obstacle {
         return;
     }
 
-    function void smallCactus8(int col, int row) {
-        var int addr;
-        let addr = 16384 + (row * 32) + col;
-        if ((col > -1) & (col < 32)) {
-            do Memory.poke(addr, -16384);
-            do Memory.poke(addr + 32, -8192);
-            do Memory.poke(addr + 64, -8192);
-            do Memory.poke(addr + 96, -8192);
-            do Memory.poke(addr + 128, -6656);
-            do Memory.poke(addr + 160, -6656);
-            do Memory.poke(addr + 192, -6656);
-            do Memory.poke(addr + 224, -6656);
-            do Memory.poke(addr + 256, -6656);
-            do Memory.poke(addr + 288, -512);
-            do Memory.poke(addr + 320, -1024);
-            do Memory.poke(addr + 352, -8192);
-            do Memory.poke(addr + 384, -8192);
-            do Memory.poke(addr + 416, -8192);
-            do Memory.poke(addr + 448, -8192);
-            do Memory.poke(addr + 480, -8192);
-            do Memory.poke(addr + 512, -8192);
-            do Memory.poke(addr + 544, -8192);
-        }
-        if (((col + 1) > -1) & ((col + 1) < 32)) {
-            do Memory.poke(addr + 1, 0);
-            do Memory.poke(addr + 33, 1);
-            do Memory.poke(addr + 65, 1);
-            do Memory.poke(addr + 97, 25);
-            do Memory.poke(addr + 129, 25);
-            do Memory.poke(addr + 161, 25);
-            do Memory.poke(addr + 193, 25);
-            do Memory.poke(addr + 225, 31);
-            do Memory.poke(addr + 257, 15);
-            do Memory.poke(addr + 289, 1);
-            do Memory.poke(addr + 321, 1);
-            do Memory.poke(addr + 353, 1);
-            do Memory.poke(addr + 385, 1);
-            do Memory.poke(addr + 417, 1);
-            do Memory.poke(addr + 449, 1);
-            do Memory.poke(addr + 481, 1);
-            do Memory.poke(addr + 513, 1);
-            do Memory.poke(addr + 545, 1);
-        }
-        return;
-    }
-
-    function void bigCactus0(int col, int row) {
+    function void bigCactus(int col, int row) {
         var int addr;
         let addr = 16384 + (row * 32) + col;
         if ((col > -1) & (col < 32)) {
@@ -208,84 +144,6 @@ class Obstacle {
             do Memory.poke(addr + 609, 960);
             do Memory.poke(addr + 641, 960);
             do Memory.poke(addr + 673, 960);
-        }
-        return;
-    }
-
-    function void bigCactus8(int col, int row) {
-        var int addr;
-        let addr = 16384 + (row * 32) + col;
-        if ((col > -1) & (col < 32)) {
-            do Memory.poke(addr, -32767 - 1);
-            do Memory.poke(addr + 32, -16384);
-            do Memory.poke(addr + 64, -16384);
-            do Memory.poke(addr + 96, -16384);
-            do Memory.poke(addr + 128, -14848);
-            do Memory.poke(addr + 160, -14592);
-            do Memory.poke(addr + 192, -14592);
-            do Memory.poke(addr + 224, -14592);
-            do Memory.poke(addr + 256, -14592);
-            do Memory.poke(addr + 288, -14592);
-            do Memory.poke(addr + 320, -256);
-            do Memory.poke(addr + 352, -512);
-            do Memory.poke(addr + 384, -16384);
-            do Memory.poke(addr + 416, -16384);
-            do Memory.poke(addr + 448, -16384);
-            do Memory.poke(addr + 480, -16384);
-            do Memory.poke(addr + 512, -16384);
-            do Memory.poke(addr + 544, -16384);
-            do Memory.poke(addr + 576, -16384);
-            do Memory.poke(addr + 608, -16384);
-            do Memory.poke(addr + 640, -16384);
-            do Memory.poke(addr + 672, -16384);
-        }
-        if (((col + 1) > -1) & ((col + 1) < 32)) {
-            do Memory.poke(addr + 1, 1);
-            do Memory.poke(addr + 33, -32765);
-            do Memory.poke(addr + 65, -16381);
-            do Memory.poke(addr + 97, -16333);
-            do Memory.poke(addr + 129, -13261);
-            do Memory.poke(addr + 161, -12749);
-            do Memory.poke(addr + 193, -12749);
-            do Memory.poke(addr + 225, -12749);
-            do Memory.poke(addr + 257, -12737);
-            do Memory.poke(addr + 289, -12769);
-            do Memory.poke(addr + 321, -12797);
-            do Memory.poke(addr + 353, -509);
-            do Memory.poke(addr + 385, -1021);
-            do Memory.poke(addr + 417, -16381);
-            do Memory.poke(addr + 449, -16381);
-            do Memory.poke(addr + 481, -16381);
-            do Memory.poke(addr + 513, -16381);
-            do Memory.poke(addr + 545, -16381);
-            do Memory.poke(addr + 577, -16381);
-            do Memory.poke(addr + 609, -16381);
-            do Memory.poke(addr + 641, -16381);
-            do Memory.poke(addr + 673, -16381);
-        }
-        if (((col + 2) > -1) & ((col + 2) < 32)) {
-            do Memory.poke(addr + 2, 0);
-            do Memory.poke(addr + 34, 1);
-            do Memory.poke(addr + 66, 3);
-            do Memory.poke(addr + 98, 3);
-            do Memory.poke(addr + 130, 51);
-            do Memory.poke(addr + 162, 115);
-            do Memory.poke(addr + 194, 115);
-            do Memory.poke(addr + 226, 115);
-            do Memory.poke(addr + 258, 127);
-            do Memory.poke(addr + 290, 63);
-            do Memory.poke(addr + 322, 3);
-            do Memory.poke(addr + 354, 3);
-            do Memory.poke(addr + 386, 3);
-            do Memory.poke(addr + 418, 3);
-            do Memory.poke(addr + 450, 3);
-            do Memory.poke(addr + 482, 3);
-            do Memory.poke(addr + 514, 3);
-            do Memory.poke(addr + 546, 3);
-            do Memory.poke(addr + 578, 3);
-            do Memory.poke(addr + 610, 3);
-            do Memory.poke(addr + 642, 3);
-            do Memory.poke(addr + 674, 3);
         }
         return;
     }
