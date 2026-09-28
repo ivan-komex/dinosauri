@@ -1,17 +1,15 @@
 class Dino {
-    field int y, prevY, vy;
+    field int y, vy;
     field boolean jumping;
 
     constructor Dino new() {
         let y = 179;
-        let prevY = y;
         let vy = 0;
         let jumping = false;
         return this;
     }
 
     method void update(char key) {
-        let prevY = y;
         if (jumping) {
             let y = y + vy;
             let vy = vy + 1;
@@ -30,15 +28,14 @@ class Dino {
     }
 
     method void erase() {
-        var int r, addr;
-        let r = prevY;
-        while (r < (prevY + 21)) {
-            if ((r < y) | (r > (y + 20))) {
-                let addr = 16384 + (r * 32) + 3;
-                do Memory.poke(addr, 0);
-                do Memory.poke(addr + 1, 0);
-            }
-            let r = r + 1;
+        var int addr, i;
+        let addr = 16384 + (y * 32) + 3;
+        let i = 0;
+        while (i < 21) {
+            do Memory.poke(addr, 0);
+            do Memory.poke(addr + 1, 0);
+            let addr = addr + 32;
+            let i = i + 1;
         }
         return;
     }
@@ -91,7 +88,9 @@ class Dino {
         return;
     }
 
-    method int getY() { return y; }
+    method int getY() {
+        return y;
+    }
 
     method void dispose() {
         do Memory.deAlloc(this);

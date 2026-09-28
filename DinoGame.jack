@@ -4,8 +4,8 @@ class DinoGame {
     field int score, hiScore, delay, seed;
 
     constructor DinoGame new() {
-        let dino = null;
-        let obs = null;
+        let dino = Dino.new();
+        let obs = Obstacle.new(false, 32);
         let hiScore = 0;
         let seed = 1;
         return this;
@@ -19,24 +19,19 @@ class DinoGame {
     }
 
     method void newObstacle() {
-        if (~(obs = null)) {
-            do obs.dispose();
-        }
+        do obs.dispose();
         let obs = Obstacle.new(rand(2) = 1, 32 + rand(10));
         return;
     }
 
     method void reset() {
-        if (~(dino = null)) {
-            do dino.dispose();
-        }
+        do dino.dispose();
         let dino = Dino.new();
         do newObstacle();
         let score = 0;
         let delay = 60;
 
         do Screen.clearScreen();
-        do Screen.setColor(true);
         do Screen.drawLine(0, 200, 511, 200);
         do Output.moveCursor(0, 44);
         do Output.printString("HI ");
@@ -48,8 +43,8 @@ class DinoGame {
         var boolean dead;
         let dead = false;
         while (~dead) {
-            do dino.update(Keyboard.keyPressed());
             do dino.erase();
+            do dino.update(Keyboard.keyPressed());
 
             do obs.move();
             if (obs.isGone()) {
@@ -100,8 +95,8 @@ class DinoGame {
     }
 
     method void dispose() {
-        if (~(obs = null)) { do obs.dispose(); }
-        if (~(dino = null)) { do dino.dispose(); }
+        do obs.dispose();
+        do dino.dispose();
         do Memory.deAlloc(this);
         return;
     }
